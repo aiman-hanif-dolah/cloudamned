@@ -41,19 +41,29 @@ You join a consulting company, gather requirements from customers, make tradeoff
 - Docker, Kubernetes, networking, CI/CD, monitoring, Windows Server
 - 20 learning modules · 120+ labs · exams · XP/badges
 
-## Run
+## Live web demo
+
+**https://aiman-hanif-dolah.github.io/cloudamned/**
+
+Source: https://github.com/aiman-hanif-dolah/cloudamned
+
+## Run locally
+
+### Desktop
 
 ```bash
 cd C:\IdeaProjects\cloudamned
 flutter pub get
 flutter run -d windows
+# or: flutter run -d macos / linux
 ```
 
-macOS / Linux:
+### Web
 
 ```bash
-flutter run -d macos
-flutter run -d linux
+flutter run -d chrome
+# release build:
+flutter build web --release --base-href "/cloudamned/"
 ```
 
 ## Tests
