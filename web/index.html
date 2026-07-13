@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="cloudamned — Cloud Engineering Flight Simulator. Train as a Cloud Technical Engineer (IaaS) offline: consulting projects, AWS console, Linux, Terraform, incidents, and interviews.">
+  <meta name="theme-color" content="#09090B">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="cloudamned — Cloud Engineering Flight Simulator">
+  <meta property="og:description" content="Hands-on Cloud Technical Engineer (IaaS) career simulator. No cloud account required.">
+  <meta property="og:type" content="website">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="cloudamned">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>cloudamned — Cloud Engineering Flight Simulator</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #09090B;
+      color: #FAFAFA;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    .loading {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .loading h1 {
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      margin: 0;
+      font-weight: 700;
+    }
+    .loading p {
+      margin: 0;
+      color: #A1A1AA;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <h1>cloudamned</h1>
+    <p>Cloud Engineering Flight Simulator · loading…</p>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var el = document.getElementById('loading');
+      if (el) el.remove();
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+name: cloudamned
+description: Cloud Technical Engineer (IaaS) simulator — local, offline, production-quality training for cloud engineers.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State management
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.7
+
+  # Routing
+  go_router: ^15.1.2
+
+  # Models / serialization
+  freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+
+  # Local storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  sqflite_common_ffi: ^2.3.5
+  path: ^1.9.1
+  path_provider: ^2.1.5
+
+  # UI
+  google_fonts: ^6.2.1
+  fl_chart: ^0.71.0
+  flutter_markdown: ^0.7.7
+  lucide_icons_flutter: ^3.0.0
+
+  # Desktop
+  window_manager: ^0.4.3
+  file_picker: ^9.2.1
+
+  # Terminal
+  xterm: ^4.0.0
+
+  # Utils
+  uuid: ^4.5.1
+  collection: ^1.19.1
+  intl: ^0.20.2
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.15
+  freezed: ^3.0.6
+  json_serializable: ^6.9.5
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/
+    - assets/content/
