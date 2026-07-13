@@ -7,6 +7,7 @@ import '../../core/constants/app_routes.dart';
 import '../../core/di/injection.dart';
 import '../../core/theme/shadcn_colors.dart';
 import '../../core/widgets/shadcn_widgets.dart';
+import '../../simulation/ops/ops_models.dart';
 
 class OpsShiftPage extends StatefulWidget {
   const OpsShiftPage({super.key});
