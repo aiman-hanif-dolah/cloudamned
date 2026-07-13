@@ -32,6 +32,13 @@ import '../../features/migration/migration_lab_page.dart';
 import '../../features/monitoring/monitoring_page.dart';
 import '../../features/multi_cloud/multi_cloud_page.dart';
 import '../../features/networking/networking_page.dart';
+import '../../features/ops_center/ops_center_page.dart';
+import '../../features/ops_center/ops_interview_page.dart';
+import '../../features/ops_center/ops_kb_page.dart';
+import '../../features/ops_center/ops_monitoring_page.dart';
+import '../../features/ops_center/ops_portfolio_page.dart';
+import '../../features/ops_center/ops_shift_page.dart';
+import '../../features/ops_center/ops_ticket_desk_page.dart';
 import '../../features/roadmap/roadmap_page.dart';
 import '../../features/scenario/scenario_page.dart';
 import '../../features/security_audit/security_audit_page.dart';
@@ -65,6 +72,36 @@ GoRouter createRouter() {
           GoRoute(
             path: AppRoutes.flightDeck,
             pageBuilder: (c, s) => const NoTransitionPage(child: FlightDeckPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.opsCenter,
+            pageBuilder: (c, s) => const NoTransitionPage(child: OpsCenterPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.opsTickets,
+            pageBuilder: (c, s) => NoTransitionPage(
+              child: OpsTicketDeskPage(initialId: s.uri.queryParameters['id']),
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.opsShift,
+            pageBuilder: (c, s) => const NoTransitionPage(child: OpsShiftPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.opsMonitoring,
+            pageBuilder: (c, s) => const NoTransitionPage(child: OpsMonitoringPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.opsKb,
+            pageBuilder: (c, s) => const NoTransitionPage(child: OpsKbPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.opsPortfolio,
+            pageBuilder: (c, s) => const NoTransitionPage(child: OpsPortfolioPage()),
+          ),
+          GoRoute(
+            path: AppRoutes.opsInterview,
+            pageBuilder: (c, s) => const NoTransitionPage(child: OpsInterviewPage()),
           ),
           GoRoute(
             path: AppRoutes.discovery,

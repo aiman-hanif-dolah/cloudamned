@@ -20,6 +20,13 @@ class _NavItem {
 const _nav = <_NavItem>[
   _NavItem('Dashboard', AppRoutes.dashboard, Icons.dashboard_outlined, section: 'HOME'),
   _NavItem('Flight Deck', AppRoutes.flightDeck, Icons.flight_takeoff),
+  _NavItem('Cloud Ops Center', AppRoutes.opsCenter, Icons.support_agent, section: 'OPERATIONS DESK'),
+  _NavItem('Service Desk', AppRoutes.opsTickets, Icons.confirmation_number_outlined),
+  _NavItem('Support Shift', AppRoutes.opsShift, Icons.schedule),
+  _NavItem('Ops Monitoring', AppRoutes.opsMonitoring, Icons.monitor_heart_outlined),
+  _NavItem('Ops KB / Runbooks', AppRoutes.opsKb, Icons.menu_book),
+  _NavItem('Ops Portfolio', AppRoutes.opsPortfolio, Icons.folder_special_outlined),
+  _NavItem('Ops Interview', AppRoutes.opsInterview, Icons.record_voice_over_outlined),
   _NavItem('Discovery', AppRoutes.discovery, Icons.hearing, section: 'CONSULTING'),
   _NavItem('Platform Decisions', AppRoutes.decisions, Icons.account_tree_outlined),
   _NavItem('Career Simulation', AppRoutes.careerSim, Icons.business_center_outlined),

@@ -1,0 +1,300 @@
+import 'ops_models.dart';
+
+/// Operational runbooks for Cloud Operations Center.
+abstract final class RunbookCatalog {
+  static const all = <Runbook>[
+    Runbook(
+      id: 'rb-restart-service',
+      title: 'Restart Service',
+      category: 'Linux',
+      summary: 'Safely restart a systemd unit and verify health.',
+      steps: [
+        'Confirm blast radius and change window if needed',
+        'systemctl status <unit>',
+        'journalctl -u <unit> -n 100',
+        'systemctl restart <unit>',
+        'Verify process and curl/local health endpoint',
+        'Update ticket with before/after evidence',
+      ],
+    ),
+    Runbook(
+      id: 'rb-rotate-certs',
+      title: 'Rotate Certificates',
+      category: 'Security',
+      summary: 'Replace expired TLS material and verify clients.',
+      steps: [
+        'Identify cert store (ACM / files / secrets)',
+        'Issue or import new certificate',
+        'Attach to LB / nginx / ingress',
+        'Verify openssl s_client / browser',
+        'Set expiry monitoring',
+      ],
+    ),
+    Runbook(
+      id: 'rb-ssh-recover',
+      title: 'Recover SSH Access',
+      category: 'Access',
+      summary: 'Restore admin access without opening 0.0.0.0/0 permanently.',
+      steps: [
+        'Confirm instance running + status checks',
+        'Inspect SG/NACL/routes',
+        'Prefer SSM Session Manager if available',
+        'Temporary admin CIDR only if required',
+        'Document permanent access pattern',
+      ],
+    ),
+    Runbook(
+      id: 'rb-expand-storage',
+      title: 'Expand Storage',
+      category: 'Capacity',
+      summary: 'Grow volume and filesystem when disk is full.',
+      steps: [
+        'Identify full mount (df -h / Get-PSDrive)',
+        'Snapshot volume',
+        'Increase volume size',
+        'Grow partition/filesystem',
+        'Verify free space and app recovery',
+      ],
+    ),
+    Runbook(
+      id: 'rb-restart-docker',
+      title: 'Restart Docker Container',
+      category: 'Containers',
+      summary: 'Recover containerized workload safely.',
+      steps: [
+        'docker ps -a / compose ps',
+        'Inspect logs for crash reason',
+        'Fix config if needed',
+        'docker compose up -d --force-recreate <svc>',
+        'Verify healthcheck and dependencies',
+      ],
+    ),
+    Runbook(
+      id: 'rb-k8s-pod',
+      title: 'Recover Kubernetes Pod',
+      category: 'Kubernetes',
+      summary: 'Stabilize CrashLoopBackOff workloads.',
+      steps: [
+        'kubectl get pods -n <ns>',
+        'kubectl describe pod / logs --previous',
+        'Check probes, secrets, limits',
+        'kubectl rollout undo or restart',
+        'Confirm endpoints and alerts clear',
+      ],
+    ),
+    Runbook(
+      id: 'rb-rotate-secrets',
+      title: 'Rotate Secrets',
+      category: 'Security',
+      summary: 'Rotate credentials and bounce consumers.',
+      steps: [
+        'Identify secret consumers',
+        'Generate new secret in vault/Secrets Manager',
+        'Update apps/roles',
+        'Restart consumers',
+        'Revoke old secret after validation',
+      ],
+    ),
+    Runbook(
+      id: 'rb-backup-restore',
+      title: 'Restore Backup',
+      category: 'DR',
+      summary: 'Restore from backup vault and validate.',
+      steps: [
+        'Identify recovery point',
+        'Restore to non-prod if possible',
+        'Validate data integrity',
+        'Cutover if production recovery',
+        'Document RTO achieved',
+      ],
+    ),
+    Runbook(
+      id: 'rb-db-connectivity',
+      title: 'Database Connectivity',
+      category: 'Data',
+      summary: 'Restore app→DB network and auth path.',
+      steps: [
+        'DB instance status',
+        'SG from app to DB port',
+        'DNS endpoint',
+        'Credentials / IAM auth',
+        'Connection pool recovery',
+      ],
+    ),
+    Runbook(
+      id: 'rb-alb-health',
+      title: 'ALB Health Recovery',
+      category: 'Networking',
+      summary: 'Return targets to healthy state.',
+      steps: [
+        'Target group health',
+        'Health check path/port',
+        'SG ALB→instance',
+        'App process listening',
+        'Deregister/register if stuck',
+      ],
+    ),
+    Runbook(
+      id: 'rb-sg-fix',
+      title: 'Security Group Fix',
+      category: 'Networking',
+      summary: 'Correct SG rules with least privilege.',
+      steps: [
+        'Map required flows',
+        'Diff current vs intended',
+        'Apply minimal allow rules',
+        'Verify with flow logs / curl',
+        'Commit via IaC',
+      ],
+    ),
+    Runbook(
+      id: 'rb-route-fix',
+      title: 'Route Table Fix',
+      category: 'Networking',
+      summary: 'Correct subnet routing for egress/ingress.',
+      steps: [
+        'List RT associations',
+        'Check 0.0.0.0/0 target',
+        'NAT vs IGW correctness',
+        'Re-associate subnet',
+        'Test outbound connectivity',
+      ],
+    ),
+    Runbook(
+      id: 'rb-igw-attach',
+      title: 'Attach Internet Gateway',
+      category: 'Networking',
+      summary: 'Restore public VPC internet path.',
+      steps: [
+        'Confirm IGW exists',
+        'Attach to VPC',
+        'Ensure public RT 0.0.0.0/0 → IGW',
+        'Verify public IP instances',
+      ],
+    ),
+    Runbook(
+      id: 'rb-nat-failover',
+      title: 'NAT Failover',
+      category: 'Networking',
+      summary: 'Restore private egress when NAT fails.',
+      steps: [
+        'Identify failed NAT',
+        'Point routes to healthy NAT/endpoint',
+        'Test apt/yum and APIs',
+        'Plan multi-AZ NAT or VPC endpoints',
+      ],
+    ),
+    Runbook(
+      id: 'rb-tf-recover',
+      title: 'Terraform Failure Recovery',
+      category: 'IaC',
+      summary: 'Recover failed apply without corruption.',
+      steps: [
+        'Read error + state lock',
+        'Do not force-unlock without owner',
+        'Refresh/plan',
+        'Import or fix conflicts',
+        'Apply with peer review',
+      ],
+    ),
+    Runbook(
+      id: 'rb-pipeline-retry',
+      title: 'Pipeline Recovery',
+      category: 'CI/CD',
+      summary: 'Restore green deploy path.',
+      steps: [
+        'Identify failed stage',
+        'Classify flaky vs real failure',
+        'Redeploy last known good if prod risk',
+        'Fix root cause',
+        'Document in ticket',
+      ],
+    ),
+    Runbook(
+      id: 'rb-iam-fix',
+      title: 'IAM Permission Fix',
+      category: 'Security',
+      summary: 'Restore least-privilege access.',
+      steps: [
+        'CloudTrail AccessDenied',
+        'Map required actions',
+        'Update role/policy/boundary',
+        'Retest pipeline/app',
+        'Avoid AdministratorAccess',
+      ],
+    ),
+    Runbook(
+      id: 'rb-storage-acl',
+      title: 'Storage Permission Fix',
+      category: 'Storage',
+      summary: 'Fix object storage deny errors.',
+      steps: [
+        'Bucket policy + IAM',
+        'KMS key policy',
+        'Endpoint policies',
+        'Retest put/get',
+        'Record principals allowed',
+      ],
+    ),
+    Runbook(
+      id: 'rb-scale-compute',
+      title: 'Scale Compute',
+      category: 'Capacity',
+      summary: 'Respond to CPU/memory saturation.',
+      steps: [
+        'Confirm metric validity',
+        'Scale out/up within budget',
+        'Check ASG max',
+        'Mitigate hot code path',
+        'Schedule capacity review',
+      ],
+    ),
+    Runbook(
+      id: 'rb-alert-tune',
+      title: 'Tune Monitoring Alerts',
+      category: 'Observability',
+      summary: 'Reduce noise without missing real incidents.',
+      steps: [
+        'Measure false positive rate',
+        'Adjust thresholds/windows',
+        'Group related alerts',
+        'Link runbooks',
+        'Review with on-call',
+      ],
+    ),
+    Runbook(
+      id: 'rb-dns-cutover',
+      title: 'DNS Cutover Checklist',
+      category: 'Networking',
+      summary: 'Safe DNS changes with TTL discipline.',
+      steps: [
+        'Lower TTL ahead of change',
+        'Validate new targets',
+        'Update records',
+        'Monitor resolution globally',
+        'Raise TTL after stability',
+      ],
+    ),
+    Runbook(
+      id: 'rb-identity',
+      title: 'SSO / Identity Recovery',
+      category: 'Identity',
+      summary: 'Restore login paths after IdP changes.',
+      steps: [
+        'Capture exact error',
+        'Validate metadata/ACS URLs',
+        'Check clock skew',
+        'Test SP-initiated flow',
+        'Communicate to users',
+      ],
+    ),
+  ];
+
+  static Runbook? byId(String id) {
+    try {
+      return all.firstWhere((r) => r.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+}

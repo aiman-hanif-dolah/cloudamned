@@ -16,6 +16,7 @@ import '../../simulation/networking/network_engine.dart';
 import '../../simulation/review/architecture_review_engine.dart';
 import '../../simulation/security/security_audit_engine.dart';
 import '../../simulation/terraform/terraform_engine.dart';
+import '../../simulation/ops/ops_center_engine.dart';
 import '../../simulation/tickets/ticket_engine.dart';
 import '../constants/app_constants.dart';
 import 'db_bootstrap.dart';
@@ -48,6 +49,8 @@ class AppServices {
   final securityAudit = SecurityAuditEngine();
   final docs = DocumentationEngine();
   final flight = FlightSimController();
+  /// Additive: Cloud Operations Center (does not replace TicketEngine / Incident Lab).
+  final opsCenter = OpsCenterEngine();
 
   Future<void> init() async {
     await Hive.initFlutter();

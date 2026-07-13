@@ -103,6 +103,7 @@ class DashboardPage extends StatelessWidget {
                       child: Column(
                         children: [
                           _QuickLink(Icons.flight_takeoff, 'Flight Deck', AppRoutes.flightDeck, ShadcnColors.primary),
+                          _QuickLink(Icons.support_agent, 'Cloud Ops Center', AppRoutes.opsCenter, ShadcnColors.warning),
                           _QuickLink(Icons.hearing, 'Discovery', AppRoutes.discovery, ShadcnColors.info),
                           _QuickLink(Icons.biotech, 'Forensics', AppRoutes.forensics, ShadcnColors.destructive),
                           _QuickLink(Icons.flag, 'Capstone', AppRoutes.capstone, ShadcnColors.warning),

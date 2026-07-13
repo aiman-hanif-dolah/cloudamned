@@ -89,6 +89,7 @@ class _FlightDeckPageState extends State<FlightDeckPage> {
                 ('Generate customer', 'Unlimited unique industries & constraints', AppRoutes.discovery, Icons.business, ShadcnColors.primary),
                 ('Discovery interview', 'Customer answers — miss questions, miss requirements', AppRoutes.discovery, Icons.hearing, ShadcnColors.info),
                 ('Platform decision', 'AWS/Azure/GCP/Hybrid tradeoffs with WHY', AppRoutes.decisions, Icons.account_tree, ShadcnColors.warning),
+                ('Cloud Ops Center', 'Tickets · SLA · shift · runbooks · portfolio', AppRoutes.opsCenter, Icons.support_agent, ShadcnColors.warning),
                 ('Career project delivery', '20-step engagement with validation', AppRoutes.careerSim, Icons.work_outline, ShadcnColors.success),
                 ('Multi-cloud compare', 'Same design across clouds · cost/risk', AppRoutes.multiCloud, Icons.cloud_sync, ShadcnColors.gcp),
                 ('Failure injection', 'Disk, AZ, IAM, TLS, pipelines… recover', AppRoutes.forensics, Icons.warning_amber, ShadcnColors.destructive),

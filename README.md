@@ -36,6 +36,16 @@ You join a consulting company, gather requirements from customers, make tradeoff
 - **Architecture Review / Cost Lab / Security Audit / Documentation / Meetings & Comms**
 - **Skill Analytics** — 100+ skills + interview readiness report
 
+### Cloud Operations Center (additive — junior CTE desk reality)
+- **Ops dashboard** — open tickets, criticals, health, alerts, deploys, maintenance, stand-up
+- **Service Desk** — original ticketing lifecycle, SLA countdown, investigation-before-fix
+- **Support Shift** — 8h virtual shift with incoming work + performance metrics
+- **Runbooks + Knowledge Base** — follow procedures; publish KB after resolve
+- **Escalation + Shadow Senior** — structured escalate; mentor questions
+- **Ops Monitoring** — live gauges/charts/threshold alerts
+- **Ops Interview + Portfolio** — desk-style interview prompts; exportable artifacts
+- Does **not** replace existing labs, Flight Deck, Incident Lab, or simulators
+
 ### Simulators
 - **AWS Console clone**, **Linux VM**, **Terraform**, **Incident Lab**, **Interview design mode**
 - Docker, Kubernetes, networking, CI/CD, monitoring, Windows Server

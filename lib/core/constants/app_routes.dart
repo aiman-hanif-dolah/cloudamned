@@ -1,6 +1,13 @@
 abstract final class AppRoutes {
   static const dashboard = '/';
   static const flightDeck = '/flight-deck';
+  static const opsCenter = '/ops-center';
+  static const opsTickets = '/ops-tickets';
+  static const opsShift = '/ops-shift';
+  static const opsMonitoring = '/ops-monitoring';
+  static const opsKb = '/ops-kb';
+  static const opsPortfolio = '/ops-portfolio';
+  static const opsInterview = '/ops-interview';
   static const careerSim = '/career-sim';
   static const discovery = '/discovery';
   static const decisions = '/decisions';
