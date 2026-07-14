@@ -5,12 +5,18 @@ abstract final class AppConstants {
 
   static const defaultWindowWidth = 1440.0;
   static const defaultWindowHeight = 900.0;
-  static const minWindowWidth = 1100.0;
-  static const minWindowHeight = 700.0;
+  /// Allow narrow desktop windows / phone-like previews.
+  static const minWindowWidth = 360.0;
+  static const minWindowHeight = 560.0;
 
   static const sidebarWidth = 240.0;
   static const sidebarCollapsedWidth = 56.0;
   static const activityBarWidth = 48.0;
+
+  /// Below this width: drawer navigation instead of permanent sidebar.
+  static const mobileBreakpoint = 800.0;
+  /// Compact padding / single-column content.
+  static const compactBreakpoint = 600.0;
 
   static const xpPerLab = 100;
   static const xpPerModule = 500;

@@ -307,34 +307,50 @@ class ShadSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final narrow = MediaQuery.sizeOf(context).width < 600;
+    final titleBlock = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: -0.3,
-                ),
-              ),
-              if (subtitle != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  subtitle!,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: ShadcnColors.mutedForeground,
-                  ),
-                ),
-              ],
-            ],
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: narrow ? 16 : 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.3,
           ),
         ),
-        if (trailing != null) trailing!,
+        if (subtitle != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            subtitle!,
+            style: const TextStyle(
+              fontSize: 13,
+              color: ShadcnColors.mutedForeground,
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (trailing == null) return titleBlock;
+
+    if (narrow) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          titleBlock,
+          const SizedBox(height: 12),
+          Align(alignment: Alignment.centerLeft, child: trailing!),
+        ],
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(child: titleBlock),
+        const SizedBox(width: 12),
+        trailing!,
       ],
     );
   }

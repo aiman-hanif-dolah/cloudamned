@@ -68,6 +68,14 @@ const _nav = <_NavItem>[
   _NavItem('Statistics', AppRoutes.statistics, Icons.bar_chart_outlined),
 ];
 
+String _titleFor(String location) {
+  final match = _nav.where(
+    (n) => location == n.route || (n.route != '/' && location.startsWith(n.route)),
+  );
+  if (match.isNotEmpty) return match.first.label;
+  return AppConstants.appName;
+}
+
 class AppShell extends StatefulWidget {
   const AppShell({super.key, required this.child});
   final Widget child;
@@ -78,8 +86,12 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   bool _collapsed = false;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _go(String route) {
+  void _go(String route, {bool closeDrawer = false}) {
+    if (closeDrawer && _scaffoldKey.currentState?.isDrawerOpen == true) {
+      Navigator.of(context).pop();
+    }
     if (GoRouterState.of(context).uri.path != route) {
       context.go(route);
     }
@@ -116,88 +128,151 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
-    final width = _collapsed
-        ? AppConstants.sidebarCollapsedWidth
-        : AppConstants.sidebarWidth;
+    final width = MediaQuery.sizeOf(context).width;
+    final isMobile = width < AppConstants.mobileBreakpoint;
+    final title = _titleFor(location);
+
+    final sidebar = _SidebarPanel(
+      location: location,
+      collapsed: isMobile ? false : _collapsed,
+      onToggle: isMobile
+          ? null
+          : () => setState(() => _collapsed = !_collapsed),
+      onNavigate: (route) => _go(route, closeDrawer: isMobile),
+      denseHeader: isMobile,
+    );
 
     return Focus(
       autofocus: true,
       onKeyEvent: _onKey,
       child: Scaffold(
-        body: Row(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 160),
-              width: width,
-              decoration: const BoxDecoration(
-                color: ShadcnColors.sidebar,
-                border: Border(right: BorderSide(color: ShadcnColors.sidebarBorder)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+        key: _scaffoldKey,
+        drawer: isMobile
+            ? Drawer(
+                backgroundColor: ShadcnColors.sidebar,
+                width: mathMin(320, width * 0.88),
+                child: SafeArea(child: sidebar),
+              )
+            : null,
+        body: isMobile
+            ? Column(
                 children: [
-                  _SidebarHeader(
-                    collapsed: _collapsed,
-                    onToggle: () => setState(() => _collapsed = !_collapsed),
+                  _MobileTopBar(
+                    title: title,
+                    onMenu: () => _scaffoldKey.currentState?.openDrawer(),
+                  ),
+                  Expanded(child: widget.child),
+                ],
+              )
+            : Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 160),
+                    width: _collapsed
+                        ? AppConstants.sidebarCollapsedWidth
+                        : AppConstants.sidebarWidth,
+                    child: sidebar,
                   ),
                   Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                    child: Column(
                       children: [
-                        for (final item in _nav) ...[
-                          if (item.section != null && !_collapsed)
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 14, 8, 6),
-                              child: Text(
-                                item.section!,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.8,
-                                  color: ShadcnColors.mutedForeground,
-                                ),
-                              ),
-                            ),
-                          if (item.section != null && _collapsed)
-                            const Divider(height: 16),
-                          _NavTile(
-                            item: item,
-                            selected: location == item.route ||
-                                (item.route != '/' && location.startsWith(item.route)),
-                            collapsed: _collapsed,
-                            onTap: () => _go(item.route),
-                          ),
-                        ],
+                        _DesktopTopBar(title: title, showShortcuts: width > 1000),
+                        Expanded(child: widget.child),
                       ],
                     ),
                   ),
-                  BlocBuilder<ProgressCubit, UserProgress>(
-                    builder: (context, progress) {
-                      return _SidebarFooter(progress: progress, collapsed: _collapsed);
-                    },
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+double mathMin(double a, double b) => a < b ? a : b;
+
+class _SidebarPanel extends StatelessWidget {
+  const _SidebarPanel({
+    required this.location,
+    required this.collapsed,
+    required this.onNavigate,
+    this.onToggle,
+    this.denseHeader = false,
+  });
+
+  final String location;
+  final bool collapsed;
+  final VoidCallback? onToggle;
+  final void Function(String route) onNavigate;
+  final bool denseHeader;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: ShadcnColors.sidebar,
+        border: Border(right: BorderSide(color: ShadcnColors.sidebarBorder)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _SidebarHeader(
+            collapsed: collapsed,
+            onToggle: onToggle,
+            showClose: denseHeader,
+            onClose: denseHeader ? () => Navigator.of(context).maybePop() : null,
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              children: [
+                for (final item in _nav) ...[
+                  if (item.section != null && !collapsed)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 14, 8, 6),
+                      child: Text(
+                        item.section!,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.8,
+                          color: ShadcnColors.mutedForeground,
+                        ),
+                      ),
+                    ),
+                  if (item.section != null && collapsed) const Divider(height: 16),
+                  _NavTile(
+                    item: item,
+                    selected: location == item.route ||
+                        (item.route != '/' && location.startsWith(item.route)),
+                    collapsed: collapsed,
+                    onTap: () => onNavigate(item.route),
                   ),
                 ],
-              ),
+              ],
             ),
-            Expanded(
-              child: Column(
-                children: [
-                  _TopBar(location: location),
-                  Expanded(child: widget.child),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+          BlocBuilder<ProgressCubit, UserProgress>(
+            builder: (context, progress) {
+              return _SidebarFooter(progress: progress, collapsed: collapsed);
+            },
+          ),
+        ],
       ),
     );
   }
 }
 
 class _SidebarHeader extends StatelessWidget {
-  const _SidebarHeader({required this.collapsed, required this.onToggle});
+  const _SidebarHeader({
+    required this.collapsed,
+    this.onToggle,
+    this.showClose = false,
+    this.onClose,
+  });
   final bool collapsed;
-  final VoidCallback onToggle;
+  final VoidCallback? onToggle;
+  final bool showClose;
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
@@ -232,16 +307,24 @@ class _SidebarHeader extends StatelessWidget {
               ),
             ),
           ],
-          IconButton(
-            onPressed: onToggle,
-            icon: Icon(
-              collapsed ? Icons.chevron_right : Icons.chevron_left,
-              size: 18,
-              color: ShadcnColors.mutedForeground,
+          if (showClose && onClose != null)
+            IconButton(
+              onPressed: onClose,
+              icon: const Icon(Icons.close, size: 18, color: ShadcnColors.mutedForeground),
+              tooltip: 'Close menu',
+              visualDensity: VisualDensity.compact,
+            )
+          else if (onToggle != null)
+            IconButton(
+              onPressed: onToggle,
+              icon: Icon(
+                collapsed ? Icons.chevron_right : Icons.chevron_left,
+                size: 18,
+                color: ShadcnColors.mutedForeground,
+              ),
+              tooltip: collapsed ? 'Expand sidebar' : 'Collapse sidebar (Ctrl+[)',
+              visualDensity: VisualDensity.compact,
             ),
-            tooltip: collapsed ? 'Expand sidebar' : 'Collapse sidebar (Ctrl+[)',
-            visualDensity: VisualDensity.compact,
-          ),
         ],
       ),
     );
@@ -266,7 +349,7 @@ class _NavTile extends StatelessWidget {
     final child = AnimatedContainer(
       duration: const Duration(milliseconds: 120),
       margin: const EdgeInsets.symmetric(vertical: 1),
-      padding: EdgeInsets.symmetric(horizontal: collapsed ? 0 : 10, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: collapsed ? 0 : 10, vertical: 10),
       decoration: BoxDecoration(
         color: selected ? ShadcnColors.sidebarAccent : Colors.transparent,
         borderRadius: BorderRadius.circular(6),
@@ -279,7 +362,7 @@ class _NavTile extends StatelessWidget {
         children: [
           Icon(
             item.icon,
-            size: 16,
+            size: 18,
             color: selected ? ShadcnColors.primary : ShadcnColors.mutedForeground,
           ),
           if (!collapsed) ...[
@@ -288,7 +371,7 @@ class _NavTile extends StatelessWidget {
               child: Text(
                 item.label,
                 style: TextStyle(
-                  fontSize: 12.5,
+                  fontSize: 13,
                   fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
                   color: selected ? ShadcnColors.foreground : ShadcnColors.mutedForeground,
                 ),
@@ -327,8 +410,10 @@ class _SidebarFooter extends StatelessWidget {
       child: collapsed
           ? Column(
               children: [
-                Text('L${progress.level}',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                Text(
+                  'L${progress.level}',
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                ),
               ],
             )
           : Column(
@@ -336,11 +421,15 @@ class _SidebarFooter extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text('Level ${progress.level}',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Level ${progress.level}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
                     const Spacer(),
-                    Text('${progress.xp} XP',
-                        style: const TextStyle(fontSize: 11, color: ShadcnColors.mutedForeground)),
+                    Text(
+                      '${progress.xp} XP',
+                      style: const TextStyle(fontSize: 11, color: ShadcnColors.mutedForeground),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -364,15 +453,66 @@ class _SidebarFooter extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar({required this.location});
-  final String location;
+class _MobileTopBar extends StatelessWidget {
+  const _MobileTopBar({required this.title, required this.onMenu});
+  final String title;
+  final VoidCallback onMenu;
 
-  String get _title {
-    final match = _nav.where((n) => location == n.route || (n.route != '/' && location.startsWith(n.route)));
-    if (match.isNotEmpty) return match.first.label;
-    return 'cloudamned';
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: ShadcnColors.panelHeader,
+      child: SafeArea(
+        bottom: false,
+        child: Container(
+          height: 52,
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: ShadcnColors.border)),
+          ),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: onMenu,
+                icon: const Icon(Icons.menu, size: 22),
+                tooltip: 'Open navigation',
+              ),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(right: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: ShadcnColors.secondary,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: ShadcnColors.border),
+                ),
+                child: const Text(
+                  'OFFLINE',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: ShadcnColors.mutedForeground,
+                    letterSpacing: 0.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
+}
+
+class _DesktopTopBar extends StatelessWidget {
+  const _DesktopTopBar({required this.title, required this.showShortcuts});
+  final String title;
+  final bool showShortcuts;
 
   @override
   Widget build(BuildContext context) {
@@ -385,9 +525,12 @@ class _TopBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
-            _title,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          Flexible(
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           const SizedBox(width: 12),
           Container(
@@ -399,14 +542,20 @@ class _TopBar extends StatelessWidget {
             ),
             child: const Text(
               'OFFLINE SIMULATION',
-              style: TextStyle(fontSize: 10, color: ShadcnColors.mutedForeground, letterSpacing: 0.5),
+              style: TextStyle(
+                fontSize: 10,
+                color: ShadcnColors.mutedForeground,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
-          const Spacer(),
-          const Text(
-            'Ctrl+1–5 · Ctrl+T terminal · Ctrl+[ sidebar',
-            style: TextStyle(fontSize: 10, color: ShadcnColors.mutedForeground),
-          ),
+          if (showShortcuts) ...[
+            const Spacer(),
+            const Text(
+              'Ctrl+1–5 · Ctrl+T terminal · Ctrl+[ sidebar',
+              style: TextStyle(fontSize: 10, color: ShadcnColors.mutedForeground),
+            ),
+          ],
         ],
       ),
     );

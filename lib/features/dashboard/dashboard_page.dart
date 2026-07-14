@@ -23,8 +23,11 @@ class DashboardPage extends StatelessWidget {
         final done = progress.completedLabs.length;
         final completion = totalLabs == 0 ? 0.0 : done / totalLabs;
 
+        final pageWidth = MediaQuery.sizeOf(context).width;
+        final pad = pageWidth < 600 ? 12.0 : 20.0;
+
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(pad),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -42,13 +45,14 @@ class DashboardPage extends StatelessWidget {
               LayoutBuilder(
                 builder: (context, c) {
                   final cols = c.maxWidth > 1100 ? 4 : (c.maxWidth > 700 ? 2 : 1);
+                  final ratio = c.maxWidth < 400 ? 1.6 : (c.maxWidth < 700 ? 1.9 : 2.2);
                   return GridView.count(
                     crossAxisCount: cols,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
-                    childAspectRatio: 2.2,
+                    childAspectRatio: ratio,
                     children: [
                       ShadStatTile(
                         label: 'Overall Readiness',
@@ -80,42 +84,53 @@ class DashboardPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: ShadCard(
-                      header: const Text('Skill readiness',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      child: SizedBox(
-                        height: 220,
-                        child: _ReadinessChart(readiness: progress.readiness),
-                      ),
+              LayoutBuilder(
+                builder: (context, c) {
+                  final stack = c.maxWidth < 800;
+                  final chart = ShadCard(
+                    header: const Text('Skill readiness',
+                        style: TextStyle(fontWeight: FontWeight.w600)),
+                    child: SizedBox(
+                      height: stack ? 200 : 220,
+                      child: _ReadinessChart(readiness: progress.readiness),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: ShadCard(
-                      header: const Text('Quick launch',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      child: Column(
-                        children: [
-                          _QuickLink(Icons.flight_takeoff, 'Flight Deck', AppRoutes.flightDeck, ShadcnColors.primary),
-                          _QuickLink(Icons.support_agent, 'Cloud Ops Center', AppRoutes.opsCenter, ShadcnColors.warning),
-                          _QuickLink(Icons.hearing, 'Discovery', AppRoutes.discovery, ShadcnColors.info),
-                          _QuickLink(Icons.biotech, 'Forensics', AppRoutes.forensics, ShadcnColors.destructive),
-                          _QuickLink(Icons.flag, 'Capstone', AppRoutes.capstone, ShadcnColors.warning),
-                          _QuickLink(Icons.terminal, 'Linux Terminal', AppRoutes.terminal, ShadcnColors.linux),
-                          _QuickLink(Icons.cloud, 'AWS Console', AppRoutes.console, ShadcnColors.aws),
-                          _QuickLink(Icons.edit_note, 'Whiteboard', AppRoutes.whiteboard, ShadcnColors.chart4),
-                          _QuickLink(Icons.psychology, 'Mentor', AppRoutes.mentor, ShadcnColors.terraform),
-                        ],
-                      ),
+                  );
+                  final launch = ShadCard(
+                    header: const Text('Quick launch',
+                        style: TextStyle(fontWeight: FontWeight.w600)),
+                    child: Column(
+                      children: [
+                        _QuickLink(Icons.flight_takeoff, 'Flight Deck', AppRoutes.flightDeck, ShadcnColors.primary),
+                        _QuickLink(Icons.support_agent, 'Cloud Ops Center', AppRoutes.opsCenter, ShadcnColors.warning),
+                        _QuickLink(Icons.hearing, 'Discovery', AppRoutes.discovery, ShadcnColors.info),
+                        _QuickLink(Icons.biotech, 'Forensics', AppRoutes.forensics, ShadcnColors.destructive),
+                        _QuickLink(Icons.flag, 'Capstone', AppRoutes.capstone, ShadcnColors.warning),
+                        _QuickLink(Icons.terminal, 'Linux Terminal', AppRoutes.terminal, ShadcnColors.linux),
+                        _QuickLink(Icons.cloud, 'AWS Console', AppRoutes.console, ShadcnColors.aws),
+                        _QuickLink(Icons.edit_note, 'Whiteboard', AppRoutes.whiteboard, ShadcnColors.chart4),
+                        _QuickLink(Icons.psychology, 'Mentor', AppRoutes.mentor, ShadcnColors.terraform),
+                      ],
                     ),
-                  ),
-                ],
+                  );
+                  if (stack) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        chart,
+                        const SizedBox(height: 12),
+                        launch,
+                      ],
+                    );
+                  }
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 3, child: chart),
+                      const SizedBox(width: 12),
+                      Expanded(flex: 2, child: launch),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 20),
               ShadSectionHeader(
@@ -125,7 +140,10 @@ class DashboardPage extends StatelessWidget {
               const SizedBox(height: 12),
               LayoutBuilder(
                 builder: (context, c) {
-                  final cols = c.maxWidth > 1200 ? 4 : (c.maxWidth > 800 ? 3 : 2);
+                  final cols = c.maxWidth > 1200
+                      ? 4
+                      : (c.maxWidth > 800 ? 3 : (c.maxWidth > 480 ? 2 : 1));
+                  final aspect = c.maxWidth < 400 ? 1.35 : 1.55;
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -134,7 +152,7 @@ class DashboardPage extends StatelessWidget {
                       crossAxisCount: cols,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
-                      childAspectRatio: 1.55,
+                      childAspectRatio: aspect,
                     ),
                     itemBuilder: (context, i) {
                       final m = modules[i];
